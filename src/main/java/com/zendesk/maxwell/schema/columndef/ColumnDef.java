@@ -26,10 +26,11 @@ public abstract class ColumnDef implements Cloneable {
 	private final byte type;
 	private short pos;
 
-	protected ColumnDef(String name, String type, short pos) {
+	protected ColumnDef(String name, String type, short pos, boolean nullable) {
 		this.name = name;
 		this.pos = pos;
 		this.type = (byte) dynamicEnum.get(type);
+		this.nullable = nullable;
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public abstract class ColumnDef implements Cloneable {
 		}
 	}
 
-	public static ColumnDef build(String name, String charset, String type, short pos, boolean signed, String enumValues[], Long columnLength) {
+	public static ColumnDef build(String name, String charset, String type, short pos, boolean signed, String enumValues[], Long columnLength, boolean nullable) {
 		name = name.intern();
 		if ( charset != null )
 			charset = charset.intern();
@@ -82,23 +83,23 @@ public abstract class ColumnDef implements Cloneable {
 		case "smallint":
 		case "mediumint":
 		case "int":
-			return IntColumnDef.create(name, type, pos, signed);
+			return IntColumnDef.create(name, type, pos, signed, nullable);
 		case "bigint":
-			return BigIntColumnDef.create(name, type, pos, signed);
+			return BigIntColumnDef.create(name, type, pos, signed, nullable);
 		case "tinytext":
 		case "text":
 		case "mediumtext":
 		case "longtext":
 		case "varchar":
 		case "char":
-			return StringColumnDef.create(name, type, pos, charset);
+			return StringColumnDef.create(name, type, pos, charset, nullable);
 		case "tinyblob":
 		case "blob":
 		case "mediumblob":
 		case "longblob":
 		case "binary":
 		case "varbinary":
-			return StringColumnDef.create(name, type, pos, "binary");
+			return StringColumnDef.create(name, type, pos, "binary", nullable);
 		case "geometry":
 		case "geometrycollection":
 		case "linestring":
@@ -107,29 +108,29 @@ public abstract class ColumnDef implements Cloneable {
 		case "multipolygon":
 		case "polygon":
 		case "point":
-			return GeometryColumnDef.create(name, type, pos);
+			return GeometryColumnDef.create(name, type, pos, nullable);
 		case "float":
 		case "double":
-			return FloatColumnDef.create(name, type, pos);
+			return FloatColumnDef.create(name, type, pos, nullable);
 		case "decimal":
-			return DecimalColumnDef.create(name, type, pos);
+			return DecimalColumnDef.create(name, type, pos, nullable);
 		case "date":
-			return DateColumnDef.create(name, type, pos);
+			return DateColumnDef.create(name, type, pos, nullable);
 		case "datetime":
 		case "timestamp":
-			return DateTimeColumnDef.create(name, type, pos, columnLength);
+			return DateTimeColumnDef.create(name, type, pos, columnLength, nullable);
 		case "time":			
-			return TimeColumnDef.create(name, type, pos, columnLength);
+			return TimeColumnDef.create(name, type, pos, columnLength, nullable);
 		case "year":
-			return YearColumnDef.create(name, type, pos);
+			return YearColumnDef.create(name, type, pos, nullable);
 		case "enum":
-			return EnumColumnDef.create(name, type, pos, enumValues);
+			return EnumColumnDef.create(name, type, pos, enumValues, nullable);
 		case "set":
-			return SetColumnDef.create(name, type, pos, enumValues);
+			return SetColumnDef.create(name, type, pos, enumValues, nullable);
 		case "bit":
-			return BitColumnDef.create(name, type, pos);
+			return BitColumnDef.create(name, type, pos, nullable);
 		case "json":
-			return JsonColumnDef.create(name, type, pos);
+			return JsonColumnDef.create(name, type, pos, nullable);
 
 		default:
 			throw new IllegalArgumentException("unsupported column type " + type);
@@ -255,5 +256,13 @@ public abstract class ColumnDef implements Cloneable {
 		T clone = (T) clone();
 		mutator.accept(clone);
 		return (T) getInterner().intern(clone);
+	}
+	
+	public void setNullable(boolean nullable) {
+		this.nullable = nullable;
+	}
+	
+	public boolean isNullable() {
+		return nullable;
 	}
 }

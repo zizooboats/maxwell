@@ -6,12 +6,12 @@ import java.math.BigInteger;
 import java.util.BitSet;
 
 public class BitColumnDef extends ColumnDef {
-	private BitColumnDef(String name, String type, short pos) {
-		super(name, type, pos);
+	private BitColumnDef(String name, String type, short pos, boolean nullable) {
+		super(name, type, pos, nullable);
 	}
 
-	public static BitColumnDef create(String name, String type, short pos) {
-		BitColumnDef temp = new BitColumnDef(name, type, pos);
+	public static BitColumnDef create(String name, String type, short pos, boolean nullable) {
+		BitColumnDef temp = new BitColumnDef(name, type, pos, nullable);
 		return (BitColumnDef) INTERNER.intern(temp);
 	}
 

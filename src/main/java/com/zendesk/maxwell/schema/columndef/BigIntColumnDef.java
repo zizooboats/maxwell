@@ -10,13 +10,13 @@ public class BigIntColumnDef extends ColumnDef {
 
 	private boolean signed;
 
-	private BigIntColumnDef(String name, String type, short pos, boolean signed) {
-		super(name, type, pos);
+	private BigIntColumnDef(String name, String type, short pos, boolean signed, boolean nullable) {
+		super(name, type, pos, nullable);
 		this.signed = signed;
 	}
 
-	public static BigIntColumnDef create(String name, String type, short pos, boolean signed) {
-		BigIntColumnDef temp = new BigIntColumnDef(name, type, pos, signed);
+	public static BigIntColumnDef create(String name, String type, short pos, boolean signed, boolean nullable) {
+		BigIntColumnDef temp = new BigIntColumnDef(name, type, pos, signed, nullable);
 		return (BigIntColumnDef) INTERNER.intern(temp);
 	}
 

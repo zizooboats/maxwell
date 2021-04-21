@@ -8,12 +8,12 @@ public class DateTimeColumnDef extends ColumnDefWithLength {
 
 	private final boolean isTimestamp = getType().equals("timestamp");
 
-	private DateTimeColumnDef(String name, String type, short pos, Long columnLength) {
-		super(name, type, pos, columnLength);
+	private DateTimeColumnDef(String name, String type, short pos, Long columnLength, boolean nullable) {
+		super(name, type, pos, columnLength, nullable);
 	}
 
-	public static DateTimeColumnDef create(String name, String type, short pos, Long columnLength) {
-		DateTimeColumnDef temp = new DateTimeColumnDef(name, type, pos, columnLength);
+	public static DateTimeColumnDef create(String name, String type, short pos, Long columnLength, boolean nullable) {
+		DateTimeColumnDef temp = new DateTimeColumnDef(name, type, pos, columnLength, nullable);
 		return (DateTimeColumnDef) INTERNER.intern(temp);
 	}
 

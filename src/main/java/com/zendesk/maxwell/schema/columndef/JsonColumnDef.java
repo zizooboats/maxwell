@@ -7,12 +7,12 @@ import com.zendesk.maxwell.row.RawJSONString;
 import java.io.IOException;
 
 public class JsonColumnDef extends ColumnDef {
-	private JsonColumnDef(String name, String type, short pos) {
-		super(name, type, pos);
+	private JsonColumnDef(String name, String type, short pos, boolean nullable) {
+		super(name, type, pos, nullable);
 	}
 
-	public static JsonColumnDef create(String name, String type, short pos) {
-		JsonColumnDef temp = new JsonColumnDef(name, type, pos);
+	public static JsonColumnDef create(String name, String type, short pos, boolean nullable) {
+		JsonColumnDef temp = new JsonColumnDef(name, type, pos, nullable);
 		return (JsonColumnDef) INTERNER.intern(temp);
 	}
 

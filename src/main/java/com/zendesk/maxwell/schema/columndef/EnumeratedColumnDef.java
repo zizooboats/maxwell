@@ -10,8 +10,8 @@ abstract public class EnumeratedColumnDef extends ColumnDef  {
 	@JsonProperty("enum-values")
 	private final List<String> enumValues;
 
-	protected EnumeratedColumnDef(String name, String type, short pos, String [] enumValues) {
-		super(name, type, pos);
+	protected EnumeratedColumnDef(String name, String type, short pos, String [] enumValues, boolean nullable) {
+		super(name, type, pos, nullable);
 		ImmutableList.Builder<String> builder = ImmutableList.builderWithExpectedSize(enumValues.length);
 		for (String enumValue : enumValues) {
 			builder.add(enumValue.intern());
