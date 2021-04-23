@@ -12,6 +12,7 @@ import com.zendesk.maxwell.replication.Replicator;
 import com.zendesk.maxwell.row.HeartbeatRowMap;
 import com.zendesk.maxwell.schema.*;
 import com.zendesk.maxwell.schema.columndef.ColumnDefCastException;
+import com.zendesk.maxwell.snapshot.SnapshotController;
 import com.zendesk.maxwell.util.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -248,6 +249,7 @@ public class Maxwell implements Runnable {
 			}
 
 			SchemaStoreSchema.ensureMaxwellSchema(rawConnection, this.config.databaseName);
+			SnapshotController.ensureSnapshotSchema(rawConnection, this.config.databaseName);
 
 			try ( Connection schemaConnection = this.context.getMaxwellConnection() ) {
 				SchemaStoreSchema.upgradeSchemaStoreSchema(schemaConnection);
@@ -262,6 +264,7 @@ public class Maxwell implements Runnable {
 
 		MysqlSchemaStore mysqlSchemaStore = new MysqlSchemaStore(this.context, initPosition);
 		BootstrapController bootstrapController = this.context.getBootstrapController(mysqlSchemaStore.getSchemaID());
+		SnapshotController snapshotController = new SnapshotController(context, producer, mysqlSchemaStore);
 
 		this.context.startSchemaCompactor();
 
@@ -275,6 +278,7 @@ public class Maxwell implements Runnable {
 			mysqlSchemaStore,
 			producer,
 			bootstrapController,
+			snapshotController,
 			config.replicationMysql,
 			config.replicaServerID,
 			config.databaseName,
