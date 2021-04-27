@@ -657,10 +657,17 @@ public class MaxwellContext {
 		this.replicator = replicator;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Get the current metrics registry
 	 * @return the current metrics registry
 	 */
+=======
+	public Replicator getReplicator() {
+		return replicator;
+	}
+
+>>>>>>> dca987d4 (LEX-162 Making Maxwell config more easy)
 	public Metrics getMetrics() {
 		return metrics;
 	}
