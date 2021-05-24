@@ -17,10 +17,6 @@ categories:
       - 'update'
       - 'devops'
       - 'dependencies'
-  patch:
-    labels:
-      - 'bug'
-  default: patch
 version-template: '$RELEASE_VERSION'
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
