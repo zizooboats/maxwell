@@ -5,10 +5,14 @@
   <groupId>com.zizoo</groupId>
   <artifactId>maxwell</artifactId>
 <<<<<<< HEAD
+<<<<<<< HEAD
   <version>1.35.2</version>
 =======
   <version>1.33.0-SNAPSHOT</version>
 >>>>>>> 631afe9e (LEX-161 Amended fork pom.xml)
+=======
+  <version>1.33.1-SNAPSHOT</version>
+>>>>>>> 2eab0a95 (Bumped pom version)
   <packaging>jar</packaging>
 
   <name>maxwell</name>
