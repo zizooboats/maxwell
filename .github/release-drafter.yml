@@ -1,0 +1,29 @@
+categories:
+  - title: '🚀 Features'
+    labels:
+      - 'task'
+      - 'story'
+      - 'epic'
+      - 'feature'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'bug'
+      - 'bugfix'
+      - 'hotfix'
+      - 'fix'
+      - 'issue'
+  - title: '👆 Updates'
+    labels:
+      - 'update'
+      - 'devops'
+      - 'dependencies'
+  patch:
+    labels:
+      - 'bug'
+  default: patch
+version-template: '$RELEASE_VERSION'
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+template: |
+  Thanks to: $CONTRIBUTORS
+  $CHANGES
