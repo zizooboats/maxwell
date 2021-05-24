@@ -15,11 +15,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Extract maven package version
-        run: |
-          echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+        id: mvn-extract-version
+        run: echo "##[set-output name=version;]$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
 
       # Drafts your next Release notes as Pull Requests are merged into "master"
       - uses: release-drafter/release-drafter@v5
         name: Create Draft Release
         env:
+          MVN_VERSION: ${{ steps.mvn-extract-version.outputs.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

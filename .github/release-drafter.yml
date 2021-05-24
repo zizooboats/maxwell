@@ -17,7 +17,7 @@ categories:
       - 'update'
       - 'devops'
       - 'dependencies'
-version-template: '$RELEASE_VERSION'
+version-template: '$MVN_VERSION'
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 template: |
