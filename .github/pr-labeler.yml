@@ -1,0 +1,18 @@
+# Issue Types
+epic: epic/*
+task: [task/*, 'subtask/*']
+feature: ['story/*', 'feature/*']
+bug: ['issue/*', 'fix/*', 'bugfix/*', 'bug/*', 'problem/*', 'hotfix/*', 'defect/*']
+update: ['renovate/*']
+
+# Teams
+operations: ['*/ops-*', '*/operations-*', '*/op-*']
+devops: ['*/dev-*', '*/devops-*']
+charter-experience: ['*/cex-*']
+booking-experience: ['*/gro-*', '*/grow-*', '*/growth-*', '*/bex-*']
+landing-experience: ['*/seo-*', '*/seo-*', '*/lex-*']
+
+# Workflow
+automerge-merge: ['dev']
+automerge-squash: ['issue/*', 'fix/*', 'bugfix/*', 'hotfix/*', 'bug/*', 'problem/*', 'epic/*', 'task/*', 'subtask/*', 'story/*', 'feature/*', 'defect/*', 'dependabot/*', 'revert*']
+wip: ['wip', 'work in progress', 'WIP']
