@@ -34,7 +34,7 @@ jobs:
       #if: github.ref != 'refs/heads/dev'
       uses: "pascalgn/automerge-action@v0.14.2"
       env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_ACCESS_KEY }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           MERGE_LABELS: "automerge-squash,!wip,!work in progress"
           MERGE_METHOD: "squash"
           MERGE_REMOVE_LABELS: "automerge-squash"
@@ -49,7 +49,7 @@ jobs:
       uses: "pascalgn/automerge-action@v0.14.2"
       #if: github.ref == 'refs/heads/dev'
       env:
-          GITHUB_TOKEN: "${{ secrets.ZIZOO_CI_TOKEN }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           MERGE_LABELS: "automerge-merge,!wip,!work in progress"
           MERGE_METHOD: "merge"
           MERGE_REMOVE_LABELS: "automerge-merge"
