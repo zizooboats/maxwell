@@ -1,0 +1,5 @@
+projects: [ 'SEO', 'BUGS', 'DEVOPS', 'GROW', 'OPS', 'GRO', 'OP', 'BEX', 'LEX', 'CEX' ]
+check_title: false
+check_branch: false
+check_commits: false
+ignore_case: true
