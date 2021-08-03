@@ -1,0 +1,30 @@
+name: New Pull Request
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  setup:
+    name: Setup PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+
+      - name: Check Labels
+        uses: TimonVS/pr-labeler-action@v3.1.0
+        with:
+          configuration-path: .github/pr-labeler.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.ZIZOO_CI_TOKEN }}
+
+      # - name: Check Linting
+      #   uses: vijaykramesh/pr-lint-action@v1.1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.ZIZOO_CI_TOKEN }}
+
+      - name: Assign PR Author
+        uses: samspills/assign-pr-to-author@v1.0.1
+        #      if: github.event_name == 'pull_request' && github.event.action == 'opened'
+        with:
+          repo-token: '${{ secrets.ZIZOO_CI_TOKEN }}'
