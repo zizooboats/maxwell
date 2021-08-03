@@ -1,0 +1,60 @@
+name: Update Pull Request
+on:
+  check_run:
+    types:
+      # Check runs completing successfully can unblock the
+      # corresponding pull requests and make them mergeable.
+      - completed
+  pull_request:
+    types:
+      - unlabeled
+      - synchronize
+      - edited
+      - ready_for_review
+      - reopened
+      - unlocked
+  pull_request_review:
+    types:
+      - submitted
+  check_suite:
+    types:
+      - completed
+  status: {}  
+jobs:
+
+  update-pr:
+    name: Re-check PR
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Branch
+      uses: actions/checkout@v2.3.4
+
+# Only run if the source branch is not dev
+    - name: Automerge Feature
+      #if: github.ref != 'refs/heads/dev'
+      uses: "pascalgn/automerge-action@v0.14.2"
+      env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_ACCESS_KEY }}"
+          MERGE_LABELS: "automerge-squash,!wip,!work in progress"
+          MERGE_METHOD: "squash"
+          MERGE_REMOVE_LABELS: "automerge-squash"
+          MERGE_DELETE_BRANCH: "true"
+          MERGE_COMMIT_MESSAGE: "pull-request-title-and-description"
+          MERGE_FORKS: "false"
+          MERGE_RETRIES: "6"
+          MERGE_RETRY_SLEEP: "10000"
+
+# Only run if the source branch is dev
+    - name: Automerge Master
+      uses: "pascalgn/automerge-action@v0.14.2"
+      #if: github.ref == 'refs/heads/dev'
+      env:
+          GITHUB_TOKEN: "${{ secrets.ZIZOO_CI_TOKEN }}"
+          MERGE_LABELS: "automerge-merge,!wip,!work in progress"
+          MERGE_METHOD: "merge"
+          MERGE_REMOVE_LABELS: "automerge-merge"
+          MERGE_DELETE_BRANCH: "false"
+          MERGE_COMMIT_MESSAGE: "pull-request-title-and-description"
+          MERGE_FORKS: "false"
+          MERGE_RETRIES: "6"
+          MERGE_RETRY_SLEEP: "10000"
