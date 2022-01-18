@@ -11,13 +11,8 @@ import java.util.Arrays;
  * Created by ben on 12/30/15.
  */
 public class GeometryColumnDef extends ColumnDef {
-	private GeometryColumnDef(String name, String type, short pos) {
-		super(name, type, pos);
-	}
-
-	public static GeometryColumnDef create(String name, String type, short pos) {
-		GeometryColumnDef temp = new GeometryColumnDef(name, type, pos);
-		return (GeometryColumnDef) INTERNER.intern(temp);
+	public GeometryColumnDef(String name, String type, short pos, boolean nullable) {
+		super(name, type, pos, nullable);
 	}
 
 	@Override

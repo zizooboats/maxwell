@@ -2,19 +2,13 @@ package com.zendesk.maxwell.schema.columndef;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import com.zendesk.maxwell.producer.MaxwellOutputConfig;
 import org.apache.commons.lang3.StringUtils;
 
 public class SetColumnDef extends EnumeratedColumnDef {
-	private SetColumnDef(String name, String type, short pos, String[] enumValues) {
-		super(name, type, pos, enumValues);
-	}
-
-	public static SetColumnDef create(String name, String type, short pos, String[] enumValues) {
-		SetColumnDef temp = new SetColumnDef(name, type, pos, enumValues);
-		return (SetColumnDef) INTERNER.intern(temp);
+	public SetColumnDef(String name, String type, short pos, String[] enumValues, boolean nullable) {
+		super(name, type, pos, enumValues, nullable);
 	}
 
 	@Override
@@ -33,10 +27,9 @@ public class SetColumnDef extends EnumeratedColumnDef {
 		} else if ( value instanceof Long ) {
 			ArrayList<String> values = new ArrayList<>();
 			long v = (Long) value;
-			List<String> enumValues = getEnumValues();
-			for (int i = 0; i < enumValues.size(); i++) {
+			for (int i = 0; i < enumValues.length; i++) {
 				if (((v >> i) & 1) == 1) {
-					values.add(enumValues.get(i));
+					values.add(enumValues[i]);
 				}
 			}
 			return values;
