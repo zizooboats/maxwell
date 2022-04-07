@@ -1,16 +1,18 @@
 package com.zendesk.maxwell.schema;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.sql.*;
+import java.util.*;
+
+import java.io.IOException;
+
 import com.github.shyiko.mysql.binlog.GtidSet;
+
+import com.fasterxml.jackson.databind.JavaType;
 import com.zendesk.maxwell.CaseSensitivity;
 import com.zendesk.maxwell.MaxwellContext;
-import com.zendesk.maxwell.replication.BinlogPosition;
 import com.zendesk.maxwell.replication.Position;
 import com.zendesk.maxwell.schema.columndef.*;
-import com.zendesk.maxwell.schema.ddl.InvalidSchemaError;
-import com.zendesk.maxwell.schema.ddl.ResolvedSchemaChange;
+
 import com.zendesk.maxwell.util.ConnectionPool;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,9 +20,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.sql.*;
-import java.util.*;
+import com.zendesk.maxwell.replication.BinlogPosition;
+import com.zendesk.maxwell.schema.ddl.InvalidSchemaError;
+import com.zendesk.maxwell.schema.ddl.ResolvedSchemaChange;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class MysqlSavedSchema {
 	static int SchemaStoreVersion = 4;
@@ -39,7 +44,7 @@ public class MysqlSavedSchema {
 	static final Logger LOGGER = LoggerFactory.getLogger(MysqlSavedSchema.class);
 
 	private final static String columnInsertSQL =
-			"INSERT INTO `columns` (schema_id, table_id, name, charset, coltype, is_signed, enum_values, column_length, is_nullable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			"INSERT INTO `columns` (schema_id, table_id, name, charset, coltype, is_signed, enum_values, column_length) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 	private final CaseSensitivity sensitivity;
 	private final Long serverID;
@@ -145,6 +150,7 @@ public class MysqlSavedSchema {
 						"position_sha = ?, gtid_set = ?, last_heartbeat_read = ?",
 				Statement.RETURN_GENERATED_KEYS);) {
 
+
 			String deltaString;
 
 			try {
@@ -249,38 +255,12 @@ public class MysqlSavedSchema {
 						} else {
 							columnData.add(null);
 						}
-						columnData.add(c.isNullable() ? 1 : 0);
 					}
 
 					if ( columnData.size() > 1000 )
 						executeColumnInsert(conn, columnData);
 
-				if ( c instanceof StringColumnDef ) {
-						columnData.add(((StringColumnDef) c).getCharset());
-					} else {
-						columnData.add(null);
-					}
-
-					columnData.add(c.getType());
-
-					if ( c instanceof IntColumnDef ) {
-						columnData.add(((IntColumnDef) c).isSigned() ? 1 : 0);
-					} else if ( c instanceof BigIntColumnDef ) {
-						columnData.add(((BigIntColumnDef) c).isSigned() ? 1 : 0);
-					} else {
-						columnData.add(0);
-					}
-
-					columnData.add(enumValuesSQL);
-
-					if ( c instanceof ColumnDefWithLength ) {
-						Long columnLength = ((ColumnDefWithLength) c).getColumnLength();
-						columnData.add(columnLength);
-					} else {
-						columnData.add(null);
-					}
-
-					columnData.add(c.isNullable() ? 1 : 0);}
+				}
 			}
 			if ( columnData.size() > 0 )
 				executeColumnInsert(conn, columnData);
@@ -290,8 +270,8 @@ public class MysqlSavedSchema {
 	private void executeColumnInsert(Connection conn, ArrayList<Object> columnData) throws SQLException {
 		String insertColumnSQL = this.columnInsertSQL;
 
-		for (int i=1; i < columnData.size() / 9; i++) {
-			insertColumnSQL = insertColumnSQL + ", (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		for (int i=1; i < columnData.size() / 8; i++) {
+			insertColumnSQL = insertColumnSQL + ", (?, ?, ?, ?, ?, ?, ?, ?)";
 		}
 
 		try ( PreparedStatement columnInsert = conn.prepareStatement(insertColumnSQL) ) {
@@ -475,8 +455,7 @@ public class MysqlSavedSchema {
 						"c.name AS columnName," +
 						"c.charset AS columnCharset," +
 						"c.coltype AS columnColtype," +
-						"c.is_signed AS columnIsSigned," +
-						"c.is_nullable as columnIsNullable " +
+						"c.is_signed AS columnIsSigned " +
 						"FROM `databases` d " +
 						"LEFT JOIN tables t ON d.id = t.database_id " +
 						"LEFT JOIN columns c ON c.table_id=t.id " +
@@ -507,16 +486,8 @@ public class MysqlSavedSchema {
 					String columnCharset = rs.getString("columnCharset");
 					String columnType = rs.getString("columnColtype");
 					int columnIsSigned = rs.getInt("columnIsSigned");
-					int columnIsNullable = rs.getInt("columnIsNullable");
 
-					// Column
-					String columnName = rs.getString("columnName");
-					int columnLengthInt = rs.getInt("columnLength");
-					String columnEnumValues = rs.getString("columnEnumValues");
-					String columnCharset = rs.getString("columnCharset");
-					String columnType = rs.getString("columnColtype");
-					int columnIsSigned = rs.getInt("columnIsSigned");
-					int columnIsNullable = rs.getInt("columnIsNullable");if (currentDatabase == null || !currentDatabase.getName().equals(dbName)) {
+					if (currentDatabase == null || !currentDatabase.getName().equals(dbName)) {
 						currentDatabase = new Database(dbName, dbCharset);
 						this.schema.addDatabase(currentDatabase);
 						// make sure two tables named the same in different dbs are picked up.
@@ -557,38 +528,6 @@ public class MysqlSavedSchema {
 							} catch (IOException e) {
 								throw new SQLException(e);
 							}
-
-							if (tName == null) {
-								// if tName is null, there are no tables connected to this database
-								continue;
-							} else if (currentTable == null || !currentTable.getName().equals(tName)) {
-								currentTable = currentDatabase.buildTable(tName, tCharset);
-								if (tPKs != null) {
-									List<String> pkList = Arrays.asList(StringUtils.split(tPKs, ','));
-									currentTable.setPKList(pkList);
-								}
-								columnIndex = 0;
-							}
-
-
-							if (columnName == null) {
-								// If columnName is null, there are no columns connected to this table
-								continue;
-							}
-
-							Long columnLength;
-							if (rs.wasNull()) {
-								columnLength = null;
-							} else {
-								columnLength = Long.valueOf(columnLengthInt);
-							}String[] enumValues = null;
-					if (columnEnumValues != null) {
-						if (this.schemaVersion >= 4) {
-							try {
-								enumValues = mapper.readValue(columnEnumValues, String[].class);
-							} catch (IOException e) {
-								throw new SQLException(e);
-							}
 						} else {
 							enumValues = StringUtils.splitByWholeSeparatorPreserveAllTokens(columnEnumValues, ",");
 						}
@@ -602,28 +541,12 @@ public class MysqlSavedSchema {
 							columnIsSigned == 1,
 							enumValues,
 							columnLength,
-							columnIsNullable == 1
+							true
 					);
 					currentTable.addColumn(c);
 
 				}
 				LOGGER.debug("Restored all databases");
-			}
-		}
-	}
-
-					ColumnDef c = ColumnDef.build(
-							columnName,
-							columnCharset,
-							columnType,
-							columnIndex++,
-							columnIsSigned == 1,
-							enumValues,
-							columnLength,
-							columnIsNullable == 1
-					);
-					currentTable.addColumn(c);
-				}
 			}
 		}
 	}

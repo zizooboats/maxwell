@@ -79,7 +79,7 @@ public abstract class ColumnDef implements Cloneable {
 		}
 	}
 
-	public static ColumnDef build(String name, String charset, String type, short pos, boolean signed, String enumValues[], Long columnLength, boolean nullable) {
+	public static ColumnDef build(String name, String charset, String type, short pos, boolean signed, String[]  enumValues, Long columnLength, boolean nullable) {
 		name = name.intern();
 		if ( charset != null )
 			charset = charset.intern();
