@@ -15,8 +15,8 @@ public class IntColumnDef extends ColumnDef {
 		this.bits = bitsFromType(type);
 	}
 
-	public static IntColumnDef create(String name, String type, short pos, boolean signed) {
-		IntColumnDef temp = new IntColumnDef(name, type, pos, signed);
+	public static IntColumnDef create(String name, String type, short pos, boolean signed, boolean nullable) {
+		IntColumnDef temp = new IntColumnDef(name, type, pos, signed, nullable);
 		return (IntColumnDef) INTERNER.intern(temp);
 	}
 

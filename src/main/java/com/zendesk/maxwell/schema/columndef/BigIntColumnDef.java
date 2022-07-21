@@ -15,8 +15,8 @@ public class BigIntColumnDef extends ColumnDef {
 		this.signed = signed;
 	}
 
-	public static BigIntColumnDef create(String name, String type, short pos, boolean signed) {
-		BigIntColumnDef temp = new BigIntColumnDef(name, type, pos, signed);
+	public static BigIntColumnDef create(String name, String type, short pos, boolean signed, boolean nullable) {
+		BigIntColumnDef temp = new BigIntColumnDef(name, type, pos, signed, nullable);
 		return (BigIntColumnDef) INTERNER.intern(temp);
 	}
 

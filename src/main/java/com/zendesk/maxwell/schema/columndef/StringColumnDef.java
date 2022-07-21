@@ -10,15 +10,15 @@ import java.util.Objects;
 
 public class StringColumnDef extends ColumnDef {
 	// mutability only allowed after clone and prior to insertion to interner
-	private String charset;
+	public String charset;
 
 	public StringColumnDef(String name, String type, short pos, String charset, boolean nullable) {
 		super(name, type, pos, nullable);
 		this.charset = charset;
 	}
 
-	public static StringColumnDef create(String name, String type, short pos, String charset) {
-		StringColumnDef temp = new StringColumnDef(name, type, pos, charset);
+	public static StringColumnDef create(String name, String type, short pos, String charset, boolean nullable) {
+		StringColumnDef temp = new StringColumnDef(name, type, pos, charset, nullable);
 		return (StringColumnDef) INTERNER.intern(temp);
 	}
 

@@ -97,11 +97,11 @@ public class SchemaCapturer implements AutoCloseable {
 		ArrayList<Database> databases = new ArrayList<>();
 
 		String dbCaptureQuery =
-			"SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME FROM INFORMATION_SCHEMA.SCHEMATA";
+				"SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME FROM INFORMATION_SCHEMA.SCHEMATA";
 
 		if ( includeDatabases.size() > 0 ) {
 			dbCaptureQuery +=
-				" WHERE SCHEMA_NAME IN " + Sql.inListSQL(includeDatabases.size());
+					" WHERE SCHEMA_NAME IN " + Sql.inListSQL(includeDatabases.size());
 		}
 		dbCaptureQuery += " ORDER BY SCHEMA_NAME";
 
@@ -184,15 +184,15 @@ public class SchemaCapturer implements AutoCloseable {
 				String[] enumValues = null;
 				String tableName = r.getString("TABLE_NAME");
 
-			if (tables.containsKey(tableName)) {
-				Table t = tables.get(tableName);
-				String colName = r.getString("COLUMN_NAME");
-				String colType = r.getString("DATA_TYPE");
-				String colEnc = r.getString("CHARACTER_SET_NAME");
-				short colPos = (short) (r.getInt("ORDINAL_POSITION") - 1);
-				boolean colSigned = !r.getString("COLUMN_TYPE").matches(".* unsigned$");
-				boolean colNullable = "YES".equals(r.getString("IS_NULLABLE"));
-				Long columnLength = null;
+				if (tables.containsKey(tableName)) {
+					Table t = tables.get(tableName);
+					String colName = r.getString("COLUMN_NAME");
+					String colType = r.getString("DATA_TYPE");
+					String colEnc = r.getString("CHARACTER_SET_NAME");
+					short colPos = (short) (r.getInt("ORDINAL_POSITION") - 1);
+					boolean colSigned = !r.getString("COLUMN_TYPE").matches(".* unsigned$");
+					boolean colNullable = "YES".equals(r.getString("IS_NULLABLE"));
+					Long columnLength = null;
 
 					if (isMySQLAtLeast56)
 						columnLength = r.getLong("DATETIME_PRECISION");
@@ -206,14 +206,10 @@ public class SchemaCapturer implements AutoCloseable {
 						enumValues = extractEnumValues(expandedType);
 					}
 
-					t.addColumn(ColumnDef.build(colName, colEnc, colType, colPos, colSigned, enumValues, columnLength));
+					t.addColumn(ColumnDef.build(colName, colEnc, colType, colPos, colSigned, enumValues, columnLength, colNullable));
 
 					pkIndexCounters.put(tableName, pkIndexCounters.get(tableName) + 1);
 				}
-
-				t.addColumn(ColumnDef.build(colName, colEnc, colType, colPos, colSigned, enumValues, columnLength, colNullable));
-
-				pkIndexCounters.put(tableName, pkIndexCounters.get(tableName) + 1);
 			}
 		}
 

@@ -12,9 +12,11 @@ abstract public class EnumeratedColumnDef extends ColumnDef  {
 
 	public EnumeratedColumnDef(String name, String type, short pos, String [] enumValues, boolean nullable) {
 		super(name, type, pos, nullable);
-		this.enumValues = new String[enumValues.length];
-		for ( int i = 0; i < enumValues.length; i++)
-			this.enumValues[i] = enumValues[i].intern();
+		ImmutableList.Builder<String> builder = ImmutableList.builderWithExpectedSize(enumValues.length);
+		for (String enumValue : enumValues) {
+			builder.add(enumValue.intern());
+		}
+		this.enumValues = builder.build();
 	}
 
 	public List<String> getEnumValues() {

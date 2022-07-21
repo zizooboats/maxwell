@@ -6,8 +6,8 @@ public class FloatColumnDef extends ColumnDef {
 		super(name, type, pos, nullable);
 	}
 
-	public static FloatColumnDef create(String name, String type, short pos) {
-		FloatColumnDef temp = new FloatColumnDef(name, type, pos);
+	public static FloatColumnDef create(String name, String type, short pos, boolean nullable) {
+		FloatColumnDef temp = new FloatColumnDef(name, type, pos, nullable);
 		return (FloatColumnDef) INTERNER.intern(temp);
 	}
 

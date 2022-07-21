@@ -7,8 +7,8 @@ public class DecimalColumnDef extends ColumnDef {
 		super(name, type, pos, nullable);
 	}
 
-	public static DecimalColumnDef create(String name, String type, short pos) {
-		DecimalColumnDef temp = new DecimalColumnDef(name, type, pos);
+	public static DecimalColumnDef create(String name, String type, short pos, boolean nullable) {
+		DecimalColumnDef temp = new DecimalColumnDef(name, type, pos, nullable);
 		return (DecimalColumnDef) INTERNER.intern(temp);
 	}
 

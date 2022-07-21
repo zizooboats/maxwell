@@ -10,8 +10,8 @@ public class TimeColumnDef extends ColumnDefWithLength {
 		super(name, type, pos, columnLength, nullable);
 	}
 
-	public static TimeColumnDef create(String name, String type, short pos, Long columnLength) {
-		TimeColumnDef temp = new TimeColumnDef(name, type, pos, columnLength);
+	public static TimeColumnDef create(String name, String type, short pos, Long columnLength, boolean nullable) {
+		TimeColumnDef temp = new TimeColumnDef(name, type, pos, columnLength, nullable);
 		return (TimeColumnDef) INTERNER.intern(temp);
 	}
 

@@ -12,8 +12,8 @@ public class SetColumnDef extends EnumeratedColumnDef {
 		super(name, type, pos, enumValues, nullable);
 	}
 
-	public static SetColumnDef create(String name, String type, short pos, String[] enumValues) {
-		SetColumnDef temp = new SetColumnDef(name, type, pos, enumValues);
+	public static SetColumnDef create(String name, String type, short pos, String[] enumValues, boolean nullable) {
+		SetColumnDef temp = new SetColumnDef(name, type, pos, enumValues, nullable);
 		return (SetColumnDef) INTERNER.intern(temp);
 	}
 

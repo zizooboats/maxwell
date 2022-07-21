@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 @JsonSerialize(using=ColumnDefSerializer.class)
 @JsonDeserialize(using=ColumnDefDeserializer.class)
 public abstract class ColumnDef implements Cloneable {
+	protected static final Interner INTERNER = Interners.newWeakInterner();
 	private static DynamicEnum dynamicEnum = new DynamicEnum(Byte.MAX_VALUE);
 	protected String name;
 	protected byte type;
@@ -78,7 +79,7 @@ public abstract class ColumnDef implements Cloneable {
 		}
 	}
 
-	public static ColumnDef build(String name, String charset, String type, short pos, boolean signed, String enumValues[], Long columnLength, boolean nullable) {
+	public static ColumnDef build(String name, String charset, String type, short pos, boolean signed, String[]  enumValues, Long columnLength, boolean nullable) {
 		name = name.intern();
 		if ( charset != null )
 			charset = charset.intern();
@@ -88,23 +89,23 @@ public abstract class ColumnDef implements Cloneable {
 		case "smallint":
 		case "mediumint":
 		case "int":
-			return new IntColumnDef(name, type, pos, signed, nullable);
+			return IntColumnDef.create(name, type, pos, signed, nullable);
 		case "bigint":
-			return new BigIntColumnDef(name, type, pos, signed, nullable);
+			return BigIntColumnDef.create(name, type, pos, signed, nullable);
 		case "tinytext":
 		case "text":
 		case "mediumtext":
 		case "longtext":
 		case "varchar":
 		case "char":
-			return new StringColumnDef(name, type, pos, charset, nullable);
+			return StringColumnDef.create(name, type, pos, charset, nullable);
 		case "tinyblob":
 		case "blob":
 		case "mediumblob":
 		case "longblob":
 		case "binary":
 		case "varbinary":
-			return new StringColumnDef(name, type, pos, "binary", nullable);
+			return StringColumnDef.create(name, type, pos, "binary", nullable);
 		case "geometry":
 		case "geometrycollection":
 		case "linestring":
@@ -113,29 +114,29 @@ public abstract class ColumnDef implements Cloneable {
 		case "multipolygon":
 		case "polygon":
 		case "point":
-			return new GeometryColumnDef(name, type, pos, nullable);
+			return GeometryColumnDef.create(name, type, pos, nullable);
 		case "float":
 		case "double":
-			return new FloatColumnDef(name, type, pos, nullable);
+			return FloatColumnDef.create(name, type, pos, nullable);
 		case "decimal":
-			return new DecimalColumnDef(name, type, pos, nullable);
+			return DecimalColumnDef.create(name, type, pos, nullable);
 		case "date":
-			return new DateColumnDef(name, type, pos, nullable);
+			return DateColumnDef.create(name, type, pos, nullable);
 		case "datetime":
 		case "timestamp":
-			return new DateTimeColumnDef(name, type, pos, columnLength, nullable);
+			return DateTimeColumnDef.create(name, type, pos, columnLength, nullable);
 		case "time":			
-			return new TimeColumnDef(name, type, pos, columnLength, nullable);
+			return TimeColumnDef.create(name, type, pos, columnLength, nullable);
 		case "year":
-			return new YearColumnDef(name, type, pos, nullable);
+			return YearColumnDef.create(name, type, pos, nullable);
 		case "enum":
-			return new EnumColumnDef(name, type, pos, enumValues, nullable);
+			return EnumColumnDef.create(name, type, pos, enumValues, nullable);
 		case "set":
-			return new SetColumnDef(name, type, pos, enumValues, nullable);
+			return SetColumnDef.create(name, type, pos, enumValues, nullable);
 		case "bit":
-			return new BitColumnDef(name, type, pos, nullable);
+			return BitColumnDef.create(name, type, pos, nullable);
 		case "json":
-			return new JsonColumnDef(name, type, pos, nullable);
+			return JsonColumnDef.create(name, type, pos, nullable);
 
 		default:
 			throw new IllegalArgumentException("unsupported column type " + type);

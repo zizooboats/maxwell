@@ -15,8 +15,8 @@ public class GeometryColumnDef extends ColumnDef {
 		super(name, type, pos, nullable);
 	}
 
-	public static GeometryColumnDef create(String name, String type, short pos) {
-		GeometryColumnDef temp = new GeometryColumnDef(name, type, pos);
+	public static GeometryColumnDef create(String name, String type, short pos, boolean nullable) {
+		GeometryColumnDef temp = new GeometryColumnDef(name, type, pos, nullable);
 		return (GeometryColumnDef) INTERNER.intern(temp);
 	}
 

@@ -7,8 +7,8 @@ public class EnumColumnDef extends EnumeratedColumnDef {
 		super(name, type, pos, enumValues, nullable);
 	}
 
-	public static EnumColumnDef create(String name, String type, short pos, String[] enumValues) {
-		EnumColumnDef temp = new EnumColumnDef(name, type, pos, enumValues);
+	public static EnumColumnDef create(String name, String type, short pos, String[] enumValues, boolean nullable) {
+		EnumColumnDef temp = new EnumColumnDef(name, type, pos, enumValues, nullable);
 		return (EnumColumnDef) INTERNER.intern(temp);
 	}
 

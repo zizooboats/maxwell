@@ -10,8 +10,8 @@ public class BitColumnDef extends ColumnDef {
 		super(name, type, pos, nullable);
 	}
 
-	public static BitColumnDef create(String name, String type, short pos) {
-		BitColumnDef temp = new BitColumnDef(name, type, pos);
+	public static BitColumnDef create(String name, String type, short pos, boolean nullable) {
+		BitColumnDef temp = new BitColumnDef(name, type, pos, nullable);
 		return (BitColumnDef) INTERNER.intern(temp);
 	}
 
