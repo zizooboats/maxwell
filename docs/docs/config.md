@@ -1,8 +1,7 @@
 # Reference
 ***
 
-At the minimum, you will need to specify 'host', 'user', 'password', 'producer'.
-The kafka producer requires 'kafka.bootstrap.servers', the kinesis producer requires 'kinesis_stream'.
+Configuration options are set either via command line or the "config.properties" file. 
 
 ##general
 
@@ -236,6 +235,7 @@ init_position                  | FILE:POSITION[:HEARTBEAT]           | ignore th
 replay                         | BOOLEAN                             | enable maxwell's read-only "replay" mode: don't store a binlog position or schema changes.  Not available in config.properties. |
 buffer_memory_usage            | FLOAT                               | Determines how much memory the Maxwell event buffer will use from the jvm max memory. Size of the buffer is: buffer_memory_usage * -Xmx" | 0.25
 http_config                    | BOOLEAN                             | enable http config endpoint for config updates without restart | false
+binlog_event_queue_size        | INT                                 | Size of queue to buffer events parsed from binlog   | 5000
 
 
 <p id="loglevel" class="jumptarget">
@@ -310,79 +310,4 @@ A get request will return the live config state
 }
 ```
 
-### Deployment scenarios
-***
-
-At a minimum, Maxwell needs row-level-replication turned on into order to
-operate:
-
-```
-[mysqld]
-server_id=1
-log-bin=master
-binlog_format=row
-```
-
-#### GTID support
-As of 1.8.0, Maxwell contains support for
-[GTID-based replication](https://dev.mysql.com/doc/refman/5.6/en/replication-gtids.html).
-Enable it with the `--gtid_mode` configuration param.
-
-Here's how you might configure your mysql server for GTID mode:
-
-```
-$ vi my.cnf
-
-[mysqld]
-server_id=1
-log-bin=master
-binlog_format=row
-gtid-mode=ON
-log-slave-updates=ON
-enforce-gtid-consistency=true
-```
-
-When in GTID-mode, Maxwell will transparently pick up a new replication
-position after a master change.  Note that you will still have to re-point
-maxwell to the new master.
-
-GTID support in Maxwell is considered beta-quality at the moment; notably,
-Maxwell is unable to transparently upgrade from a traditional-replication
-scenario to a GTID-replication scenario; currently, when you enable gtid mode
-Maxwell will recapture the schema and GTID-position from "wherever the master
-is at".
-
-
-#### RDS configuration
-To run Maxwell against RDS, (either Aurora or Mysql) you will need to do the following:
-
-- set binlog_format to "ROW".  Do this in the "parameter groups" section.  For a Mysql-RDS instance this parameter will be
-  in a "DB Parameter Group", for Aurora it will be in a "DB Cluster Parameter Group".
-- setup RDS binlog retention as described [here](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.MySQL.html).
-  The tl;dr is to execute `call mysql.rds_set_configuration('binlog retention hours', 24)` on the server.
-
-#### Split server roles
-
-Maxwell uses MySQL for 3 different functions:
-
-1. A host to store the captured schema in (`--host`).
-2. A host to replicate from (`--replication_host`).
-3. A host to capture the schema from (`--schema_host`).
-
-Often, all three hosts are the same.  `host` and `replication_host` should be different
-if maxwell is chained off a replica.  `schema_host` should only be used when using the
-maxscale replication proxy.
-
-#### Multiple Maxwell Instances
-
-Maxwell can operate with multiple instances running against a single master, in
-different configurations.  This can be useful if you wish to have producers
-running in different configurations, for example producing different groups of
-tables to different topics.  Each instance of Maxwell must be configured with a
-unique `client_id`, in order to store unique binlog positions.
-
-With MySQL 5.5 and below, each replicator (be it mysql, maxwell, whatever) must
-also be configured with a unique `replica_server_id`.  This is a 32-bit integer
-that corresponds to mysql's `server_id` parameter.  The value you configure
-should be unique across all mysql and maxwell instances.
 
